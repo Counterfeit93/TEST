@@ -1,0 +1,83 @@
+package projekt.zaliczenie.application.database;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import javax.sql.DataSource;
+import java.util.List;
+public class Database {
+    @Autowired
+    private JdbcTemplate jdbcTemplate = new JdbcTemplate(mysqlDarasource());
+    @Bean
+    public DataSource mysqlDarasource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/messages");
+        dataSource.setUsername("root");
+        dataSource.setPassword("Krasi321.");
+        return dataSource;
+    }
+//Baza lokalna Kuba ignorować
+//@Bean
+//public DataSource mysqlDarasource() {
+//    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//    dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+//    dataSource.setUrl("jdbc:mysql://localhost:3306/messages");
+//    dataSource.setUsername("root");
+//    dataSource.setPassword("Kajen123");
+//
+//    return dataSource;
+//}
+    public List<User> getAllUsers() {
+        return jdbcTemplate.query("SELECT * FROM users",
+                BeanPropertyRowMapper.newInstance(User.class));
+    }
+    
+    public List<User>getUser(int id)
+    {
+    	return jdbcTemplate.query("SELECT * FROM users WHERE id_user = '"+id+"'",
+                BeanPropertyRowMapper.newInstance(User.class));
+    }
+        
+    public boolean addUser(String login,String password)
+    {
+    	if (login != null &&password != null) {
+    		jdbcTemplate.update("INSERT INTO users (login, password) VALUES('"+login+"','"+password+"')");
+    		return true;
+    	}
+    	return false;
+    }
+    public List<Messages> getAllMessages() {
+        return jdbcTemplate.query("SELECT * FROM messages",
+                BeanPropertyRowMapper.newInstance(Messages.class));
+    }
+    
+    public List<Messages> getMessage(int id)
+    {
+    	return jdbcTemplate.query("SELECT * FROM messages WHERE id_message = '"+id+"'",
+                BeanPropertyRowMapper.newInstance(Messages.class));
+    }
+    
+   /* public boolean sendMessage(int idSender, int idReciver, String message)
+    {
+    	f (login != null &&password != null) {
+    		jdbcTemplate.update("INSERT INTO users (login, password) VALUES('"+login+"','"+password+"')");
+    		return true;
+    	}
+    	return false;
+    }*/
+    
+    public List<Refreshes> getAllRefresh() {
+        return jdbcTemplate.query("SELECT * FROM refreshes",
+                BeanPropertyRowMapper.newInstance(Refreshes.class));
+    }
+
+    //dodanie do bazy x 3
+
+
+    //select wiadomości where user sender = x and id > x reciver
+    //select wiadomości where user sender = x and reciver > x
+
+}
