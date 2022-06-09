@@ -1,0 +1,50 @@
+package projekt.zaliczenie.application.backend;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import projekt.zaliczenie.application.database.Database;
+import projekt.zaliczenie.application.database.Messages;
+import projekt.zaliczenie.application.database.User;
+//klasa wywoływana po kliknięciu w chat na bocznym panelu
+public class Chat {
+    // lista wiadomości - id
+    //pobiera dany czat user 1 z user 2 najlepiej w konstruktorze wywołanie metody
+    //zwraca chat podzielony na wiadomości od do
+    private Database database;
+    public List<User> users;
+    public List<Messages> messages;
+	public Chat(Database database) {
+        this.database = database;
+        nameUsers();
+    }
+	
+	public ArrayList <String> nameUsers()
+	{
+		ArrayList <String> listWithUsers = new ArrayList<>(); 
+		messages = database.getAllMessages();
+		users = database.getAllUsers();
+		for(int i=0;i<messages.size();i++)
+		{
+			int idr = messages.get(i).getId_reciver();
+			int ids = messages.get(i).getId_sender();
+			for(int j=0; j<users.size();j++)
+			{
+				if(idr == users.get(j).getId_user())
+				{
+					listWithUsers.add(users.get(j).getLogin());
+				}
+			}
+			for(int j=0; j<users.size();j++)
+			{
+				if(ids == users.get(j).getId_user())
+				{
+					listWithUsers.add(users.get(j).getLogin());
+				}
+			}
+			listWithUsers.add(messages.get(i).getMessage());
+		}				
+		return listWithUsers;
+	}
+
+}
