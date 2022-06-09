@@ -1,0 +1,51 @@
+package projekt.zaliczenie.application.backend;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import projekt.zaliczenie.application.database.Database;
+import projekt.zaliczenie.application.database.Messages;
+import projekt.zaliczenie.application.database.User;
+//klasa wywoływana po kliknięciu w chat na bocznym panelu
+public class Chat {
+    // lista wiadomości - id
+    //pobiera dany czat user 1 z user 2 najlepiej w konstruktorze wywołanie metody
+    //zwraca chat podzielony na wiadomości od do
+    private Database database;
+    public List<User> users;
+    public List<Messages> messages;
+	public Chat(Database database) {
+        this.database = database;
+        users = database.getAllUsers();
+    }
+	
+	public Map <String, Integer> mapOfUsers(List<User> users)
+	{
+		Map<String, Integer> map = new HashMap<String,Integer>();
+	    for (User u : users) {
+	        map.put(u.getLogin(), u.getId_user());
+	    }
+	    return map;
+	}	
+	
+	public List<String> getUserNames(Map <String, Integer> map)
+	{
+		List<String> list = map.keySet().stream().collect(Collectors.toList());
+		return list;
+	}
+	
+	public int findUser(Map <String, Integer> map, String user)
+	{
+		int id = map.get(user);
+		return id;
+	}
+	
+	public List<Messages> chatList(String user, String user2)
+	{
+		int userID = findUser(mapOfUsers(users),user);
+		int user2ID = findUser(mapOfUsers(users),user2);
+		List<Messages> messages = database.getConversation(userID, user2ID);
+		return messages;
+	}
