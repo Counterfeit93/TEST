@@ -1,0 +1,11 @@
+    public List<Messages> getConversation(int user1, int user2)
+    {
+    	return jdbcTemplate.query("SELECT * FROM messages WHERE (id_sender = '"+user1+"' AND id_reciver = '"+user2+"') OR (id_sender = '"+user2+"' AND id_reciver = '"+user1+"')",
+                BeanPropertyRowMapper.newInstance(Messages.class));
+    }
+    
+    public List<Messages> getConversationUpdate(int user1, int user2, int id)
+    {
+    	return jdbcTemplate.query("SELECT * FROM messages WHERE ((id_sender = '"+user1+"' AND id_reciver = '"+user2+"') OR (id_sender = '"+user2+"' AND id_reciver = '"+user1+"')) AND id_message > '"+id+"'",
+                BeanPropertyRowMapper.newInstance(Messages.class));
+    }
