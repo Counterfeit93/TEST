@@ -1,0 +1,77 @@
+package projekt.zaliczenie.application.views.Rejestracja;
+
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import projekt.zaliczenie.application.backend.Registration;
+import projekt.zaliczenie.application.database.Database;
+import projekt.zaliczenie.application.views.chat.Mainscreen;
+
+
+@PageTitle("Zarejestruj się")
+@Route("rejestracja")
+public class Rejestracja extends VerticalLayout {
+
+
+    private H2 title;
+    private TextField nick;
+    private PasswordField pass;
+    private Button register;
+    private String nickValue;
+    private String passValue;
+
+    public Rejestracja() {
+        this.getElement().getStyle().set( "background-image" , "url('images/background.jpg')" );
+        title = new H2("Zarejestruj konto");
+        title.setHeight("100px");
+        title.setWidth("100%");
+        nick = new TextField("Podaj nick");
+        pass = new PasswordField("Wpisz hasło");
+        pass.setHeight("100px");
+        register = new Button("Zarejestruj");
+
+        setMargin(false);
+        setSizeFull();
+        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
+        getStyle().set("text-align", "center");
+        add(title, nick, pass, register);
+        nick.addValueChangeListener(event -> {
+            nickValue = nick.getValue();
+        });
+        pass.addValueChangeListener(event -> {
+            passValue = pass.getValue();
+        });
+
+        register.addClickListener(event -> {
+            Database database = new Database();
+            Registration registration = new Registration(database);
+            if (registration.loginCheck(nickValue)) {
+                Notification.show("Login zajęty, wybierz inny");
+            } else if (passValue.length() < 7) {
+                Notification.show("Za krótkie hasło, wymagane 7 znaków");
+            } else {
+                if (database.register(nickValue, passValue)) {
+                	database.newUserAddRefresh(database.getAllUsers().size(), 0);
+                    Notification.show("Zarejestrowano");
+                    Mainscreen.setLogedUser(nick.getValue());
+                    Mainscreen.setDatabase(database);
+                    register.getUI().ifPresent(ui -> ui.navigate("mainscreen"));
+                } else {
+                    Notification.show("Wystąpił błąd");
+                }
+            }
+        });
+
+
+
+
+    }
+
+
+
+}
